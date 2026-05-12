@@ -72,7 +72,7 @@ export default function ItemListPage({
 
   return (
     <main className="min-h-screen bg-sky-50 text-gray-950">
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-6 pt-5">
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-24 pt-5">
         <header className="mb-5 space-y-2">
           <p className="text-sm font-bold text-teal-800">
             いつものメーカー帳
@@ -84,14 +84,6 @@ export default function ItemListPage({
             メーカー・サイズ・写真を店頭ですぐ見返せます。
           </p>
         </header>
-
-        <button
-          type="button"
-          onClick={onAddItem}
-          className="mb-4 min-h-12 w-full rounded-lg bg-teal-800 px-4 text-base font-bold text-white"
-        >
-          + 追加
-        </button>
 
         <section className="sticky top-0 z-10 mb-4 space-y-3 bg-sky-50 pb-3">
           <SearchBox value={searchQuery} onChange={setSearchQuery} />
@@ -126,6 +118,14 @@ export default function ItemListPage({
             ) : null}
           </section>
         ) : null}
+
+        <button
+          type="button"
+          onClick={onAddItem}
+          className="fixed bottom-5 right-5 z-20 min-h-14 rounded-full bg-teal-800 px-5 text-base font-bold text-white shadow-lg shadow-teal-900/20"
+        >
+          + 追加
+        </button>
       </div>
     </main>
   );
