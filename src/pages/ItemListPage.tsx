@@ -5,7 +5,11 @@ import SearchBox from "../components/SearchBox";
 import { listPocketItems, seedPocketItemsIfEmpty } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
 
-export default function ItemListPage() {
+type ItemListPageProps = {
+  onSelectItem: (itemId: string) => void;
+};
+
+export default function ItemListPage({ onSelectItem }: ItemListPageProps) {
   const [items, setItems] = useState<PocketItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(allCategory);
@@ -101,7 +105,7 @@ export default function ItemListPage() {
         {!isLoading && !errorMessage ? (
           <section className="space-y-3" aria-label="登録済み商品">
             {filteredItems.map((item) => (
-              <ItemCard key={item.id} item={item} />
+              <ItemCard key={item.id} item={item} onSelect={onSelectItem} />
             ))}
             {filteredItems.length === 0 ? (
               <p className="rounded-lg bg-white p-4 text-gray-700">

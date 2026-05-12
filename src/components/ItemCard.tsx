@@ -2,6 +2,7 @@ import type { PocketItem } from "../types/PocketItem";
 
 type ItemCardProps = {
   item: PocketItem;
+  onSelect: (itemId: string) => void;
 };
 
 const formatDate = (date: string) => {
@@ -12,9 +13,14 @@ const formatDate = (date: string) => {
   return date.replaceAll("-", "/");
 };
 
-export default function ItemCard({ item }: ItemCardProps) {
+export default function ItemCard({ item, onSelect }: ItemCardProps) {
   return (
-    <article className="grid grid-cols-[88px_1fr] gap-4 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+    <button
+      type="button"
+      onClick={() => onSelect(item.id)}
+      className="grid w-full grid-cols-[88px_1fr] gap-4 rounded-lg border border-gray-200 bg-white p-3 text-left shadow-sm transition active:scale-[0.99]"
+      aria-label={`${item.makerName} ${item.itemName}の詳細を開く`}
+    >
       <div className="flex h-24 w-[88px] items-center justify-center overflow-hidden rounded-md bg-teal-50 text-xs font-semibold text-teal-800">
         {item.photoDataUrl ? (
           <img
@@ -46,6 +52,6 @@ export default function ItemCard({ item }: ItemCardProps) {
           </span>
         </div>
       </div>
-    </article>
+    </button>
   );
 }
