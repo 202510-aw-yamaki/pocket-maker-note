@@ -6,6 +6,7 @@ type ItemDetailPageProps = {
   itemId: string;
   onBack: () => void;
   onEdit: (item: PocketItem) => void;
+  onDelete: (itemId: string) => Promise<void>;
 };
 
 const formatDate = (date: string) => {
@@ -19,10 +20,12 @@ const formatDate = (date: string) => {
 export default function ItemDetailPage({
   itemId,
   onBack,
-  onEdit
+  onEdit,
+  onDelete
 }: ItemDetailPageProps) {
   const [item, setItem] = useState<PocketItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -46,6 +49,31 @@ export default function ItemDetailPage({
 
     void loadItem();
   }, [itemId]);
+
+  const handleDelete = async () => {
+    if (!item) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `${item.makerName} ${item.itemName}を削除しますか？`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeleting(true);
+
+    try {
+      await onDelete(item.id);
+    } catch (error) {
+      setErrorMessage("削除できませんでした。");
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-sky-50 text-gray-950">
@@ -122,13 +150,23 @@ export default function ItemDetailPage({
               </dl>
             </section>
 
-            <button
-              type="button"
-              onClick={() => onEdit(item)}
-              className="min-h-12 w-full rounded-lg bg-teal-800 px-4 text-base font-bold text-white"
-            >
-              編集
-            </button>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => onEdit(item)}
+                className="min-h-12 rounded-lg bg-teal-800 px-4 text-base font-bold text-white"
+              >
+                編集
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="min-h-12 rounded-lg border border-red-200 bg-white px-4 text-base font-bold text-red-700 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+              >
+                {isDeleting ? "削除中" : "削除"}
+              </button>
+            </div>
           </article>
         ) : null}
       </div>

@@ -16,6 +16,7 @@ class PocketItemsDatabase extends Dexie {
 }
 
 export const pocketItemsDb = new PocketItemsDatabase();
+const sampleSeededKey = "pocket-maker-note:sample-seeded";
 
 const createItemId = () => {
   if (globalThis.crypto?.randomUUID) {
@@ -81,11 +82,19 @@ export const deletePocketItem = async (id: string) => {
 };
 
 export const seedPocketItemsIfEmpty = async () => {
-  const itemCount = await pocketItemsDb.pocketItems.count();
+  const wasSeeded = globalThis.localStorage?.getItem(sampleSeededKey);
 
-  if (itemCount > 0) {
+  if (wasSeeded === "true") {
     return;
   }
 
-  await pocketItemsDb.pocketItems.bulkAdd(sampleItems);
+  const itemCount = await pocketItemsDb.pocketItems.count();
+
+  if (itemCount > 0) {
+    globalThis.localStorage?.setItem(sampleSeededKey, "true");
+    return;
+  }
+
+  await pocketItemsDb.pocketItems.bulkPut(sampleItems);
+  globalThis.localStorage?.setItem(sampleSeededKey, "true");
 };
