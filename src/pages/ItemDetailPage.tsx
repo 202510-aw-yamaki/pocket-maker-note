@@ -5,6 +5,7 @@ import type { PocketItem } from "../types/PocketItem";
 type ItemDetailPageProps = {
   itemId: string;
   onBack: () => void;
+  onEdit: (item: PocketItem) => void;
 };
 
 const formatDate = (date: string) => {
@@ -15,7 +16,11 @@ const formatDate = (date: string) => {
   return date;
 };
 
-export default function ItemDetailPage({ itemId, onBack }: ItemDetailPageProps) {
+export default function ItemDetailPage({
+  itemId,
+  onBack,
+  onEdit
+}: ItemDetailPageProps) {
   const [item, setItem] = useState<PocketItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -116,6 +121,14 @@ export default function ItemDetailPage({ itemId, onBack }: ItemDetailPageProps) 
                 </div>
               </dl>
             </section>
+
+            <button
+              type="button"
+              onClick={() => onEdit(item)}
+              className="min-h-12 w-full rounded-lg bg-teal-800 px-4 text-base font-bold text-white"
+            >
+              編集
+            </button>
           </article>
         ) : null}
       </div>

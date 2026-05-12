@@ -7,9 +7,13 @@ import type { PocketItem } from "../types/PocketItem";
 
 type ItemListPageProps = {
   onSelectItem: (itemId: string) => void;
+  onAddItem: () => void;
 };
 
-export default function ItemListPage({ onSelectItem }: ItemListPageProps) {
+export default function ItemListPage({
+  onSelectItem,
+  onAddItem
+}: ItemListPageProps) {
   const [items, setItems] = useState<PocketItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(allCategory);
@@ -80,6 +84,14 @@ export default function ItemListPage({ onSelectItem }: ItemListPageProps) {
             メーカー・サイズ・写真を店頭ですぐ見返せます。
           </p>
         </header>
+
+        <button
+          type="button"
+          onClick={onAddItem}
+          className="mb-4 min-h-12 w-full rounded-lg bg-teal-800 px-4 text-base font-bold text-white"
+        >
+          + 追加
+        </button>
 
         <section className="sticky top-0 z-10 mb-4 space-y-3 bg-sky-50 pb-3">
           <SearchBox value={searchQuery} onChange={setSearchQuery} />
