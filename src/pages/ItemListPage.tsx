@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import CategoryFilter, { allCategory } from "../components/CategoryFilter";
 import ItemCard from "../components/ItemCard";
+import SearchBox from "../components/SearchBox";
 import { listPocketItems, seedPocketItemsIfEmpty } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
 
 export default function ItemListPage() {
   const [items, setItems] = useState<PocketItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(allCategory);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -25,6 +29,39 @@ export default function ItemListPage() {
     void loadItems();
   }, []);
 
+  const categories = useMemo(() => {
+    const categorySet = new Set(
+      items.map((item) => item.categoryName).filter(Boolean)
+    );
+
+    return Array.from(categorySet).sort((current, next) =>
+      current.localeCompare(next, "ja")
+    );
+  }, [items]);
+
+  const filteredItems = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+
+    return items.filter((item) => {
+      const matchesCategory =
+        selectedCategory === allCategory ||
+        item.categoryName === selectedCategory;
+      const searchableText = [
+        item.itemName,
+        item.makerName,
+        item.productDetail,
+        item.memo
+      ]
+        .join(" ")
+        .toLowerCase();
+      const matchesSearch =
+        normalizedQuery.length === 0 ||
+        searchableText.includes(normalizedQuery);
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [items, searchQuery, selectedCategory]);
+
   return (
     <main className="min-h-screen bg-sky-50 text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-6 pt-5">
@@ -40,6 +77,15 @@ export default function ItemListPage() {
           </p>
         </header>
 
+        <section className="sticky top-0 z-10 mb-4 space-y-3 bg-sky-50 pb-3">
+          <SearchBox value={searchQuery} onChange={setSearchQuery} />
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelect={setSelectedCategory}
+          />
+        </section>
+
         {isLoading ? (
           <p className="rounded-lg bg-white p-4 text-gray-700">
             読み込み中です。
@@ -54,9 +100,14 @@ export default function ItemListPage() {
 
         {!isLoading && !errorMessage ? (
           <section className="space-y-3" aria-label="登録済み商品">
-            {items.map((item) => (
+            {filteredItems.map((item) => (
               <ItemCard key={item.id} item={item} />
             ))}
+            {filteredItems.length === 0 ? (
+              <p className="rounded-lg bg-white p-4 text-gray-700">
+                該当する商品がありません。
+              </p>
+            ) : null}
           </section>
         ) : null}
       </div>
