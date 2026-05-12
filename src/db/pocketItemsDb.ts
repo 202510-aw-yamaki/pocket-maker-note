@@ -2,8 +2,14 @@ import Dexie, { type Table } from "dexie";
 import { sampleItems } from "../data/sampleItems";
 import type { PocketItem, PocketItemInput } from "../types/PocketItem";
 
+type AppMeta = {
+  key: string;
+  value: string;
+};
+
 class PocketItemsDatabase extends Dexie {
   pocketItems!: Table<PocketItem, string>;
+  appMeta!: Table<AppMeta, string>;
 
   constructor() {
     super("pocket-maker-note");
@@ -12,11 +18,17 @@ class PocketItemsDatabase extends Dexie {
       pocketItems:
         "id, itemName, makerName, categoryName, lastPurchasedAt, updatedAt"
     });
+
+    this.version(2).stores({
+      pocketItems:
+        "id, itemName, makerName, categoryName, lastPurchasedAt, updatedAt",
+      appMeta: "key"
+    });
   }
 }
 
 export const pocketItemsDb = new PocketItemsDatabase();
-const sampleSeededKey = "pocket-maker-note:sample-seeded";
+const sampleSeededKey = "sample-seeded";
 
 const createItemId = () => {
   if (globalThis.crypto?.randomUUID) {
@@ -82,19 +94,25 @@ export const deletePocketItem = async (id: string) => {
 };
 
 export const seedPocketItemsIfEmpty = async () => {
-  const wasSeeded = globalThis.localStorage?.getItem(sampleSeededKey);
+  const wasSeeded = await pocketItemsDb.appMeta.get(sampleSeededKey);
 
-  if (wasSeeded === "true") {
+  if (wasSeeded?.value === "true") {
     return;
   }
 
   const itemCount = await pocketItemsDb.pocketItems.count();
 
   if (itemCount > 0) {
-    globalThis.localStorage?.setItem(sampleSeededKey, "true");
+    await pocketItemsDb.appMeta.put({
+      key: sampleSeededKey,
+      value: "true"
+    });
     return;
   }
 
   await pocketItemsDb.pocketItems.bulkPut(sampleItems);
-  globalThis.localStorage?.setItem(sampleSeededKey, "true");
+  await pocketItemsDb.appMeta.put({
+    key: sampleSeededKey,
+    value: "true"
+  });
 };
