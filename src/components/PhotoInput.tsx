@@ -95,10 +95,11 @@ export default function PhotoInput({ value, onChange }: PhotoInputProps) {
       </div>
       <div className="flex flex-wrap gap-2">
         <label className="inline-flex min-h-11 cursor-pointer items-center rounded-full bg-teal-800 px-4 text-sm font-bold text-white">
-          {isReading ? "処理中" : "写真を選択"}
+          {isReading ? "処理中" : "写真を撮る"}
           <input
             type="file"
             accept="image/*"
+            capture="environment"
             className="sr-only"
             disabled={isReading}
             onChange={(event) => {
