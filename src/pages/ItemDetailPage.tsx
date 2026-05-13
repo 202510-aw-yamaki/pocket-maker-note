@@ -174,22 +174,26 @@ export default function ItemDetailPage({
         {item ? (
           <article className="space-y-5">
             <section className="space-y-4">
-              <span className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold ${categoryTone.tileSelected}`}>
-                <CategoryIcon iconKey={categoryIconKey} className="h-5 w-5" />
-                {item.categoryName || categoryTemplate.label}
-              </span>
-
-              <div>
-                <p className="text-2xl font-bold leading-tight text-gray-950">
-                  {item.makerName}
-                </p>
-                <h1 className="mt-2 break-keep text-4xl font-bold leading-tight tracking-normal text-gray-950">
-                  {item.itemName}
-                </h1>
-                <p className="mt-2 text-xl leading-7 text-gray-800">
-                  {item.productDetail}
-                </p>
+              <div className="flex items-center gap-3">
+                <span className={`inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold ${categoryTone.tileSelected}`}>
+                  <CategoryIcon iconKey={categoryIconKey} className="h-5 w-5" />
+                  <span className="max-w-[7.5rem] truncate">
+                    {item.categoryName || categoryTemplate.label}
+                  </span>
+                </span>
+                <div className="min-w-0">
+                  <h1 className="truncate text-2xl font-bold leading-tight text-gray-950">
+                    {item.itemName}
+                  </h1>
+                  <p className="mt-1 truncate text-base font-bold leading-tight text-gray-700">
+                    {item.makerName}
+                  </p>
+                </div>
               </div>
+
+              <p className="text-xl leading-7 text-gray-800">
+                {item.productDetail}
+              </p>
 
               <div className="mx-auto flex aspect-[3/4] w-56 items-center justify-center overflow-hidden rounded-lg bg-white text-sm font-bold text-gray-500">
                 {item.photoDataUrl ? (
@@ -217,14 +221,6 @@ export default function ItemDetailPage({
               <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
                 <dl className="divide-y divide-gray-100 text-base leading-7">
                   <div className="grid grid-cols-[5.5rem_1fr] gap-3 py-1">
-                    <dt className="text-sm font-bold text-gray-500">
-                      カテゴリー
-                    </dt>
-                    <dd className="font-semibold text-gray-900">
-                      {item.categoryName || categoryTemplate.label}
-                    </dd>
-                  </div>
-                  <div className="grid grid-cols-[5.5rem_1fr] gap-3 py-3">
                     <dt className="text-sm font-bold text-gray-500">
                       メモ
                     </dt>

@@ -180,24 +180,40 @@ export default function ItemListPage({
     );
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <main className="min-h-screen bg-[#FCEED0] text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 pb-24 pt-4">
-        <header className="mb-3 flex min-h-11 items-center justify-center">
-          <img
-            src="/pocket-maker-note/image/head.png"
-            alt="いつも買ってるあのメーカー ポケット帳"
-            className="h-12 w-auto max-w-full object-contain"
-          />
-        </header>
-
-        <section className="sticky top-0 z-10 mb-3 space-y-3 bg-[#FCEED0] pb-3">
+        <section className="sticky top-0 z-10 mb-3 space-y-3 bg-[#FCEED0] pb-3 pt-4">
+          <div className="grid min-h-12 grid-cols-[3.5rem_1fr_3.5rem] items-center gap-2">
+            <span className="text-sm font-bold text-gray-800">検索</span>
+            <img
+              src="/pocket-maker-note/image/head.png"
+              alt="いつも買ってるあのメーカー ポケット帳"
+              className="mx-auto h-12 w-auto max-w-full object-contain"
+            />
+            <button
+              type="button"
+              onClick={scrollToTop}
+              aria-label="先頭へ戻る"
+              className="min-h-10 justify-self-end rounded-full border border-teal-200 bg-white px-3 text-lg font-bold leading-none text-teal-800 shadow-sm"
+            >
+              ↑
+            </button>
+          </div>
           {saveMessage ? (
             <p className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-bold text-teal-800">
               {saveMessage}
             </p>
           ) : null}
-          <SearchBox value={searchQuery} onChange={setSearchQuery} />
+          <SearchBox
+            value={searchQuery}
+            onChange={setSearchQuery}
+            showLabel={false}
+          />
           <CategoryFilter
             categories={categories}
             selectedCategory={selectedCategory}

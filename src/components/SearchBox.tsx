@@ -1,12 +1,21 @@
 type SearchBoxProps = {
   value: string;
   onChange: (value: string) => void;
+  showLabel?: boolean;
 };
 
-export default function SearchBox({ value, onChange }: SearchBoxProps) {
+export default function SearchBox({
+  value,
+  onChange,
+  showLabel = true
+}: SearchBoxProps) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-bold text-gray-800">検索</span>
+      {showLabel ? (
+        <span className="mb-2 block text-sm font-bold text-gray-800">
+          検索
+        </span>
+      ) : null}
       <input
         type="search"
         value={value}
