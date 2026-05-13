@@ -65,31 +65,5 @@ export const sampleItems: PocketItem[] = [
     memo: "ハーフではなく普通のもの。",
     createdAt: "2026-04-25T09:00:00.000Z",
     updatedAt: "2026-04-25T09:00:00.000Z"
-  },
-  {
-    id: "6",
-    itemName: "牛乳",
-    makerName: "明治",
-    categoryName: "乳飲料",
-    categoryIconKey: "milk",
-    productDetail: "おいしい牛乳 900ml",
-    photoDataUrl: "",
-    lastPurchasedAt: "2026-05-04",
-    memo: "低脂肪ではなくいつもの赤いもの。",
-    createdAt: "2026-05-04T09:00:00.000Z",
-    updatedAt: "2026-05-04T09:00:00.000Z"
-  },
-  {
-    id: "7",
-    itemName: "麦茶",
-    makerName: "伊藤園",
-    categoryName: "飲料",
-    categoryIconKey: "drink",
-    productDetail: "健康ミネラルむぎ茶 650ml",
-    photoDataUrl: "",
-    lastPurchasedAt: "2026-05-06",
-    memo: "似た色の別メーカーと間違えやすい。",
-    createdAt: "2026-05-06T09:00:00.000Z",
-    updatedAt: "2026-05-06T09:00:00.000Z"
   }
 ];

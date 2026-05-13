@@ -41,7 +41,7 @@ export default function CategoryFilter({
       aria-label="カテゴリー絞り込み"
       className="-mx-4 overflow-x-auto px-4 pb-1 scrollbar-none"
     >
-      <div className="grid auto-cols-[4.8rem] grid-flow-col gap-2 pr-12">
+      <div className="grid auto-cols-[5.1rem] grid-flow-col gap-2 pr-12">
         {categoryOptions.map((category) => {
           const isSelected = category.value === selectedCategory;
           const tone = category.iconKey
@@ -53,7 +53,7 @@ export default function CategoryFilter({
               key={category.value}
               type="button"
               onClick={() => onSelect(category.value)}
-              className={`flex h-[5.6rem] flex-col items-center justify-between rounded-lg border p-2 text-center shadow-sm transition ${
+              className={`flex min-h-20 flex-col items-center justify-between rounded-lg border p-2 text-center shadow-sm transition ${
                 isSelected ? tone.tileSelected : tone.tileUnselected
               }`}
             >

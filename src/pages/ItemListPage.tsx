@@ -158,25 +158,10 @@ export default function ItemListPage({
   return (
     <main className="min-h-screen bg-slate-50 text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 pb-24 pt-4">
-        <header className="mb-3 flex min-h-11 items-center justify-between gap-3">
-          <button
-            type="button"
-            aria-label="メニュー"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-gray-800"
-          >
-            ≡
-          </button>
-          <p className="min-w-0 flex-1 truncate text-center text-sm font-bold text-teal-900">
+        <header className="mb-3 flex min-h-11 items-center justify-center">
+          <p className="min-w-0 truncate text-center text-sm font-bold text-teal-900">
             いつも買ってるあのメーカー ポケット帳
           </p>
-          <button
-            type="button"
-            onClick={onAddItem}
-            aria-label="追加"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-800 text-2xl font-bold leading-none text-white shadow-sm"
-          >
-            +
-          </button>
         </header>
 
         <section className="sticky top-0 z-10 mb-3 space-y-3 bg-slate-50 pb-3">
@@ -253,6 +238,13 @@ export default function ItemListPage({
           </section>
         ) : null}
 
+        <button
+          type="button"
+          onClick={onAddItem}
+          className="fixed bottom-5 right-5 z-20 min-h-14 rounded-full bg-teal-800 px-5 text-base font-bold text-white shadow-lg shadow-teal-900/20"
+        >
+          + 追加
+        </button>
       </div>
     </main>
   );
