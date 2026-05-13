@@ -31,20 +31,18 @@ export default function CategoryIconPicker({
             <button
               key={template.key}
               type="button"
+              aria-label={`${template.label}: ${template.hint}`}
               aria-pressed={isSelected}
               onClick={() => onChange(template.key)}
-              className={`min-h-16 rounded-lg border p-3 text-left transition ${
+              className={`min-h-12 rounded-lg border px-3 py-2 text-left transition ${
                 isSelected
                   ? "border-teal-800 bg-teal-50 text-teal-900 ring-2 ring-teal-100"
                   : "border-gray-200 bg-white text-gray-800"
               }`}
             >
-              <span className="flex items-center gap-2 text-sm font-bold">
+              <span className="flex items-center gap-2 text-sm font-bold leading-5">
                 <CategoryIcon iconKey={template.key} className="h-5 w-5" />
                 <span>{template.label}</span>
-              </span>
-              <span className="mt-1 block text-xs leading-5 text-gray-600">
-                {template.hint}
               </span>
             </button>
           );
