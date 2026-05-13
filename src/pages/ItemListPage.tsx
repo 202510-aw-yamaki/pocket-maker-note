@@ -20,8 +20,8 @@ type ItemListPageProps = {
   onAddItem: () => void;
 };
 
-type LatestItemGroup = CategoryFilterOption & {
-  latestItem: PocketItem;
+type ItemGroup = CategoryFilterOption & {
+  items: PocketItem[];
 };
 
 const categoryOrder = new Map(
@@ -42,6 +42,7 @@ export default function ItemListPage({
   const [items, setItems] = useState<PocketItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(allCategory);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -111,8 +112,8 @@ export default function ItemListPage({
     });
   }, [items, searchQuery, selectedCategory]);
 
-  const latestItemGroups = useMemo<LatestItemGroup[]>(() => {
-    const groupMap = new Map<string, LatestItemGroup>();
+  const itemGroups = useMemo<ItemGroup[]>(() => {
+    const groupMap = new Map<string, ItemGroup>();
 
     filteredItems.forEach((item) => {
       const iconKey = resolvePocketItemCategoryIconKey(item);
@@ -120,10 +121,7 @@ export default function ItemListPage({
 
       if (existingGroup) {
         existingGroup.count += 1;
-
-        if (getItemDateTime(item) > getItemDateTime(existingGroup.latestItem)) {
-          existingGroup.latestItem = item;
-        }
+        existingGroup.items.push(item);
 
         return;
       }
@@ -133,15 +131,29 @@ export default function ItemListPage({
         name: getCategoryIconTemplate(iconKey).label,
         iconKey,
         count: 1,
-        latestItem: item
+        items: [item]
       });
     });
 
-    return Array.from(groupMap.values()).sort((current, next) =>
-      (categoryOrder.get(current.iconKey ?? "seasoning-other") ?? 999) -
-      (categoryOrder.get(next.iconKey ?? "seasoning-other") ?? 999)
-    );
+    return Array.from(groupMap.values())
+      .map((group) => ({
+        ...group,
+        items: group.items.sort(
+          (current, next) => getItemDateTime(next) - getItemDateTime(current)
+        )
+      }))
+      .sort(
+        (current, next) =>
+          (categoryOrder.get(current.iconKey ?? "seasoning-other") ?? 999) -
+          (categoryOrder.get(next.iconKey ?? "seasoning-other") ?? 999)
+      );
   }, [filteredItems]);
+
+  const toggleExpandedCategory = (categoryValue: string) => {
+    setExpandedCategory((currentValue) =>
+      currentValue === categoryValue ? null : categoryValue
+    );
+  };
 
   return (
     <main className="min-h-screen bg-slate-50 text-gray-950">
@@ -190,12 +202,19 @@ export default function ItemListPage({
 
         {!isLoading && !errorMessage ? (
           <section className="space-y-3" aria-label="登録済み商品">
-            {latestItemGroups.map((group) => {
+            {itemGroups.map((group) => {
               const tone = getCategoryIconTone(group.iconKey);
+              const isExpanded = expandedCategory === group.value;
+              const visibleItems = isExpanded ? group.items : group.items.slice(0, 1);
 
               return (
                 <section key={group.value} className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-                  <header className={`flex min-h-9 items-center gap-2 px-3 py-2 ${tone.bar}`}>
+                  <button
+                    type="button"
+                    onClick={() => toggleExpandedCategory(group.value)}
+                    aria-expanded={isExpanded}
+                    className={`flex min-h-9 w-full items-center gap-2 px-3 py-2 text-left ${tone.bar}`}
+                  >
                       <CategoryIcon
                         iconKey={group.iconKey}
                         className="h-5 w-5 shrink-0"
@@ -204,19 +223,24 @@ export default function ItemListPage({
                       {group.name}
                     </h2>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${tone.barCount}`}>
-                      最新1件
+                      {isExpanded ? "すべて" : "最新1件"}
                     </span>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${tone.barCount}`}>
                       {group.count}件
                     </span>
-                    <span className="text-lg font-bold leading-none">›</span>
-                  </header>
-                  <div className="p-2">
-                    <ItemCard
-                      item={group.latestItem}
-                      onSelect={onSelectItem}
-                      variant="compact"
-                    />
+                    <span className="text-lg font-bold leading-none">
+                      {isExpanded ? "⌃" : "›"}
+                    </span>
+                  </button>
+                  <div className="space-y-2 p-2">
+                    {visibleItems.map((item) => (
+                      <ItemCard
+                        key={item.id}
+                        item={item}
+                        onSelect={onSelectItem}
+                        variant="compact"
+                      />
+                    ))}
                   </div>
                 </section>
               );
