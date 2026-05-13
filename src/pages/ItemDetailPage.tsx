@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import CategoryIcon from "../components/CategoryIcon";
-import { resolveCategoryIconKey } from "../data/categoryIconTemplates";
+import { resolvePocketItemCategoryIconKey } from "../data/categoryIconTemplates";
 import { getPocketItem } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
 
@@ -30,7 +30,7 @@ export default function ItemDetailPage({
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const categoryIconKey = item
-    ? resolveCategoryIconKey(item.categoryName, item.categoryIconKey)
+    ? resolvePocketItemCategoryIconKey(item)
     : undefined;
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import Dexie, { type Table } from "dexie";
-import { resolveCategoryIconKey } from "../data/categoryIconTemplates";
+import { resolvePocketItemCategoryIconKey } from "../data/categoryIconTemplates";
 import { sampleItems } from "../data/sampleItems";
 import type { PocketItem, PocketItemInput } from "../types/PocketItem";
 
@@ -45,10 +45,7 @@ const normalizeInput = (input: PocketItemInput): PocketItemInput => ({
   itemName: input.itemName.trim(),
   makerName: input.makerName.trim(),
   categoryName: input.categoryName.trim(),
-  categoryIconKey: resolveCategoryIconKey(
-    input.categoryName,
-    input.categoryIconKey
-  ),
+  categoryIconKey: resolvePocketItemCategoryIconKey(input),
   productDetail: input.productDetail.trim(),
   photoDataUrl: input.photoDataUrl,
   lastPurchasedAt: input.lastPurchasedAt,

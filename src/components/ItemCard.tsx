@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { resolveCategoryIconKey } from "../data/categoryIconTemplates";
+import { resolvePocketItemCategoryIconKey } from "../data/categoryIconTemplates";
 import type { PocketItem } from "../types/PocketItem";
 import { sharePocketItem } from "../utils/sharePocketItem";
 import CategoryIcon from "./CategoryIcon";
@@ -20,10 +20,7 @@ const formatDate = (date: string) => {
 export default function ItemCard({ item, onSelect }: ItemCardProps) {
   const [shareLabel, setShareLabel] = useState("共有");
   const [isSharing, setIsSharing] = useState(false);
-  const categoryIconKey = resolveCategoryIconKey(
-    item.categoryName,
-    item.categoryIconKey
-  );
+  const categoryIconKey = resolvePocketItemCategoryIconKey(item);
 
   const handleShare = async () => {
     setIsSharing(true);

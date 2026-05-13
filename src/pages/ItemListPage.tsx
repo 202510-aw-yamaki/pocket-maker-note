@@ -5,7 +5,7 @@ import CategoryFilter, {
 } from "../components/CategoryFilter";
 import ItemCard from "../components/ItemCard";
 import SearchBox from "../components/SearchBox";
-import { resolveCategoryIconKey } from "../data/categoryIconTemplates";
+import { resolvePocketItemCategoryIconKey } from "../data/categoryIconTemplates";
 import { listPocketItems, seedPocketItemsIfEmpty } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
 
@@ -53,7 +53,7 @@ export default function ItemListPage({
 
       categoryMap.set(categoryName, {
         name: categoryName,
-        iconKey: resolveCategoryIconKey(categoryName, item.categoryIconKey)
+        iconKey: resolvePocketItemCategoryIconKey(item)
       });
     });
 

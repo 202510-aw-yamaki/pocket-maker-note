@@ -3,7 +3,8 @@ import CategoryIconPicker from "../components/CategoryIconPicker";
 import PhotoInput from "../components/PhotoInput";
 import {
   defaultCategoryIconKey,
-  resolveCategoryIconKey
+  resolveCategoryIconKey,
+  resolvePocketItemCategoryIconKey
 } from "../data/categoryIconTemplates";
 import {
   listPocketItemCategories,
@@ -39,10 +40,7 @@ const createInitialInput = (item?: PocketItem): PocketItemInput => {
     itemName: item.itemName,
     makerName: item.makerName,
     categoryName: item.categoryName,
-    categoryIconKey: resolveCategoryIconKey(
-      item.categoryName,
-      item.categoryIconKey
-    ),
+    categoryIconKey: resolvePocketItemCategoryIconKey(item),
     productDetail: item.productDetail,
     photoDataUrl: item.photoDataUrl,
     lastPurchasedAt: item.lastPurchasedAt,
@@ -141,6 +139,7 @@ export default function ItemFormPage({
   const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
   const [isMakerMenuOpen, setIsMakerMenuOpen] = useState(false);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const [hasManualCategoryIcon, setHasManualCategoryIcon] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -169,11 +168,12 @@ export default function ItemFormPage({
   };
 
   const updateCategoryName = (value: string, forceInferIcon = false) => {
+    if (forceInferIcon) {
+      setHasManualCategoryIcon(false);
+    }
+
     setInput((current) => {
-      const shouldInferIcon =
-        forceInferIcon ||
-        !current.categoryIconKey ||
-        current.categoryIconKey === defaultCategoryIconKey;
+      const shouldInferIcon = forceInferIcon || !hasManualCategoryIcon;
 
       return {
         ...current,
@@ -186,6 +186,7 @@ export default function ItemFormPage({
   };
 
   const updateCategoryIcon = (value: CategoryIconKey) => {
+    setHasManualCategoryIcon(true);
     setInput((current) => ({
       ...current,
       categoryIconKey: value

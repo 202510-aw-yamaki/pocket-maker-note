@@ -131,10 +131,35 @@ export const resolveCategoryIconKey = (
     return iconKey;
   }
 
-  const normalizedCategoryName = categoryName.trim();
+  return findCategoryIconKey(categoryName) ?? defaultCategoryIconKey;
+};
+
+const findCategoryIconKey = (searchableText: string) => {
+  const normalizedCategoryName = searchableText.trim();
   const matchedRule = keywordRules.find((rule) =>
     rule.keywords.some((keyword) => normalizedCategoryName.includes(keyword))
   );
 
-  return matchedRule?.iconKey ?? defaultCategoryIconKey;
+  return matchedRule?.iconKey;
+};
+
+export const resolvePocketItemCategoryIconKey = (input: {
+  categoryName: string;
+  itemName?: string;
+  productDetail?: string;
+  categoryIconKey?: string;
+}): CategoryIconKey => {
+  if (isCategoryIconKey(input.categoryIconKey)) {
+    return input.categoryIconKey;
+  }
+
+  const searchableText = [
+    input.categoryName,
+    input.itemName,
+    input.productDetail
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return findCategoryIconKey(searchableText) ?? defaultCategoryIconKey;
 };
