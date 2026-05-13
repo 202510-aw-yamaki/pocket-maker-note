@@ -30,6 +30,7 @@ class PocketItemsDatabase extends Dexie {
 
 export const pocketItemsDb = new PocketItemsDatabase();
 const sampleSeededKey = "sample-seeded";
+const removedSampleItemIds = ["6", "7"];
 const maxCategoryOptions = 10;
 const maxMakerOptions = 20;
 
@@ -118,6 +119,8 @@ export const deletePocketItem = async (id: string) => {
 };
 
 export const seedPocketItemsIfEmpty = async () => {
+  await pocketItemsDb.pocketItems.bulkDelete(removedSampleItemIds);
+
   const wasSeeded = await pocketItemsDb.appMeta.get(sampleSeededKey);
 
   if (wasSeeded?.value === "true") {

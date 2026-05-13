@@ -208,13 +208,10 @@ export default function ItemListPage({
                       {group.name}
                     </h2>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${tone.barCount}`}>
-                      {isExpanded ? "すべて" : "最新1件"}
-                    </span>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${tone.barCount}`}>
                       {group.count}件
                     </span>
                     <span className="text-lg font-bold leading-none">
-                      {isExpanded ? "⌃" : "›"}
+                      {isExpanded ? "×" : "≡"}
                     </span>
                   </button>
                   <div className="space-y-2 p-2">
