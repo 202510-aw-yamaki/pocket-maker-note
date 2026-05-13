@@ -193,6 +193,12 @@ export default function ItemFormPage({
     }));
   };
 
+  const resetInput = () => {
+    setInput(createInitialInput(initialItem));
+    setHasManualCategoryIcon(false);
+    setErrorMessage("");
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const requiredFields = [
@@ -221,33 +227,36 @@ export default function ItemFormPage({
   };
 
   return (
-    <main className="min-h-screen bg-sky-50 text-gray-950">
+    <main className="min-h-screen bg-slate-50 text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-6 pt-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="mb-4 min-h-11 self-start rounded-full border border-gray-300 bg-white px-4 text-sm font-bold text-gray-800"
-        >
-          ← 戻る
-        </button>
+        <header className="mb-4 grid min-h-11 grid-cols-[4.5rem_1fr_4.5rem] items-center gap-2">
+          <button
+            type="button"
+            onClick={onBack}
+            className="justify-self-start text-base font-bold text-gray-900"
+          >
+            ‹ 戻る
+          </button>
+          <h1 className="text-center text-xl font-bold leading-tight">
+            {mode === "add" ? "追加・編集" : "追加・編集"}
+          </h1>
+          <button
+            type="button"
+            onClick={resetInput}
+            className="justify-self-end text-sm font-bold text-teal-800"
+          >
+            リセット
+          </button>
+        </header>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
-          <header>
-            <p className="text-sm font-bold text-teal-800">
-              いつものメーカー帳
-            </p>
-            <h1 className="mt-2 text-3xl font-bold leading-tight">
-              {mode === "add" ? "商品を追加" : "商品を編集"}
-            </h1>
-          </header>
-
           {errorMessage ? (
             <p className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
               {errorMessage}
             </p>
           ) : null}
 
-          <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="space-y-4">
             <label className="block space-y-2">
               <span className="block text-sm font-bold text-gray-800">
                 アイテム名
@@ -318,6 +327,7 @@ export default function ItemFormPage({
             <PhotoInput
               value={input.photoDataUrl}
               onChange={(value) => updateField("photoDataUrl", value)}
+              variant="compact"
             />
 
             <label className="block space-y-2">

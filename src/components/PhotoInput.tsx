@@ -3,6 +3,7 @@ import { useState } from "react";
 type PhotoInputProps = {
   value: string;
   onChange: (value: string) => void;
+  variant?: "default" | "compact";
 };
 
 const maxSourceBytes = 12 * 1024 * 1024;
@@ -56,9 +57,14 @@ const resizeImageFile = (file: File) => {
   });
 };
 
-export default function PhotoInput({ value, onChange }: PhotoInputProps) {
+export default function PhotoInput({
+  value,
+  onChange,
+  variant = "default"
+}: PhotoInputProps) {
   const [errorMessage, setErrorMessage] = useState("");
   const [isReading, setIsReading] = useState(false);
+  const isCompact = variant === "compact";
 
   const handleFileChange = async (file: File | undefined) => {
     if (!file) {
@@ -82,20 +88,28 @@ export default function PhotoInput({ value, onChange }: PhotoInputProps) {
   return (
     <div className="space-y-3">
       <span className="block text-sm font-bold text-gray-800">写真</span>
-      <div className="flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-lg border border-dashed border-teal-300 bg-teal-50 text-sm font-bold text-teal-800">
-        {value ? (
-          <img
-            src={value}
-            alt="選択した商品の写真"
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <span>写真未登録</span>
-        )}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <label className="inline-flex min-h-11 cursor-pointer items-center rounded-full bg-teal-800 px-4 text-sm font-bold text-white">
-          {isReading ? "処理中" : "写真を撮る"}
+      <div className={isCompact ? "flex gap-3" : "space-y-3"}>
+        <div
+          className={`flex items-center justify-center overflow-hidden rounded-lg border border-dashed border-teal-300 bg-white text-sm font-bold text-teal-800 ${
+            isCompact ? "h-28 w-28" : "aspect-[4/3] w-full"
+          }`}
+        >
+          {value ? (
+            <img
+              src={value}
+              alt="選択した商品の写真"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span className="px-2 text-center">写真未登録</span>
+          )}
+        </div>
+        <label
+          className={`inline-flex cursor-pointer items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white text-sm font-bold text-gray-600 ${
+            isCompact ? "h-28 w-28" : "min-h-11 px-4"
+          }`}
+        >
+          {isReading ? "処理中" : isCompact ? "写真を追加" : "写真を撮る"}
           <input
             type="file"
             accept="image/*"
@@ -108,6 +122,8 @@ export default function PhotoInput({ value, onChange }: PhotoInputProps) {
             }}
           />
         </label>
+      </div>
+      <div className="flex flex-wrap gap-2">
         {value ? (
           <button
             type="button"
