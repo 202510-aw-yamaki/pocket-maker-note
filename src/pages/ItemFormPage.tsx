@@ -268,7 +268,7 @@ export default function ItemFormPage({
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-gray-950">
+    <main className="min-h-screen bg-[#FCEED0] text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-6 pt-4">
         <header className="mb-4 grid min-h-11 grid-cols-[4.5rem_1fr_4.5rem] items-center gap-2">
           <button

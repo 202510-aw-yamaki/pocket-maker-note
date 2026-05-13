@@ -181,15 +181,17 @@ export default function ItemListPage({
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-gray-950">
+    <main className="min-h-screen bg-[#FCEED0] text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 pb-24 pt-4">
         <header className="mb-3 flex min-h-11 items-center justify-center">
-          <p className="min-w-0 truncate text-center text-sm font-bold text-teal-900">
-            いつも買ってるあのメーカー ポケット帳
-          </p>
+          <img
+            src="/pocket-maker-note/image/head.png"
+            alt="いつも買ってるあのメーカー ポケット帳"
+            className="h-12 w-auto max-w-full object-contain"
+          />
         </header>
 
-        <section className="sticky top-0 z-10 mb-3 space-y-3 bg-slate-50 pb-3">
+        <section className="sticky top-0 z-10 mb-3 space-y-3 bg-[#FCEED0] pb-3">
           {saveMessage ? (
             <p className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-bold text-teal-800">
               {saveMessage}

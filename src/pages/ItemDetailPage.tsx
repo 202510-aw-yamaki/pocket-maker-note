@@ -133,7 +133,7 @@ export default function ItemDetailPage({
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-gray-950">
+    <main className="min-h-screen bg-[#FCEED0] text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-6 pt-4">
         <header className="mb-4 flex min-h-11 items-center justify-between">
           <button
