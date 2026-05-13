@@ -3,6 +3,7 @@ import CategoryFilter, {
   allCategory,
   type CategoryFilterOption
 } from "../components/CategoryFilter";
+import CategoryIcon from "../components/CategoryIcon";
 import ItemCard from "../components/ItemCard";
 import SearchBox from "../components/SearchBox";
 import { resolvePocketItemCategoryIconKey } from "../data/categoryIconTemplates";
@@ -48,12 +49,19 @@ export default function ItemListPage({
       const categoryName = item.categoryName.trim();
 
       if (!categoryName || categoryMap.has(categoryName)) {
+        if (categoryName) {
+          const category = categoryMap.get(categoryName);
+          if (category) {
+            category.count += 1;
+          }
+        }
         return;
       }
 
       categoryMap.set(categoryName, {
         name: categoryName,
-        iconKey: resolvePocketItemCategoryIconKey(item)
+        iconKey: resolvePocketItemCategoryIconKey(item),
+        count: 1
       });
     });
 
@@ -84,6 +92,32 @@ export default function ItemListPage({
       return matchesCategory && matchesSearch;
     });
   }, [items, searchQuery, selectedCategory]);
+
+  const filteredItemGroups = useMemo(() => {
+    const groupMap = new Map<string, CategoryFilterOption & { items: PocketItem[] }>();
+
+    filteredItems.forEach((item) => {
+      const categoryName = item.categoryName.trim() || "未分類";
+      const existingGroup = groupMap.get(categoryName);
+
+      if (existingGroup) {
+        existingGroup.items.push(item);
+        existingGroup.count += 1;
+        return;
+      }
+
+      groupMap.set(categoryName, {
+        name: categoryName,
+        iconKey: resolvePocketItemCategoryIconKey(item),
+        count: 1,
+        items: [item]
+      });
+    });
+
+    return Array.from(groupMap.values()).sort((current, next) =>
+      current.name.localeCompare(next.name, "ja")
+    );
+  }, [filteredItems]);
 
   return (
     <main className="min-h-screen bg-sky-50 text-gray-950">
@@ -122,9 +156,35 @@ export default function ItemListPage({
         ) : null}
 
         {!isLoading && !errorMessage ? (
-          <section className="space-y-3" aria-label="登録済み商品">
-            {filteredItems.map((item) => (
-              <ItemCard key={item.id} item={item} onSelect={onSelectItem} />
+          <section className="space-y-6" aria-label="登録済み商品">
+            {filteredItemGroups.map((group) => (
+              <section key={group.name} className="space-y-3">
+                <header className="flex items-end justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-teal-800 shadow-sm">
+                      <CategoryIcon
+                        iconKey={group.iconKey}
+                        className="h-6 w-6"
+                      />
+                    </span>
+                    <h2 className="truncate text-2xl font-bold leading-tight text-gray-950">
+                      {group.name}
+                    </h2>
+                  </div>
+                  <p className="shrink-0 text-base font-bold text-teal-800">
+                    {group.count}件
+                  </p>
+                </header>
+                <div className="space-y-3">
+                  {group.items.map((item) => (
+                    <ItemCard
+                      key={item.id}
+                      item={item}
+                      onSelect={onSelectItem}
+                    />
+                  ))}
+                </div>
+              </section>
             ))}
             {filteredItems.length === 0 ? (
               <p className="rounded-lg bg-white p-4 text-gray-700">
