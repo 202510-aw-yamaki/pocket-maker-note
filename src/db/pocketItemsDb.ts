@@ -52,6 +52,17 @@ export const listPocketItems = async () => {
   return pocketItemsDb.pocketItems.orderBy("updatedAt").reverse().toArray();
 };
 
+export const listPocketItemCategories = async () => {
+  const items = await pocketItemsDb.pocketItems.toArray();
+  const categories = items
+    .map((item) => item.categoryName.trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(categories)).sort((current, next) =>
+    current.localeCompare(next, "ja")
+  );
+};
+
 export const getPocketItem = async (id: string) => {
   return pocketItemsDb.pocketItems.get(id);
 };
