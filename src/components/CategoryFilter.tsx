@@ -1,7 +1,12 @@
-import CategoryIcon from "./CategoryIcon";
+import {
+  getCategoryIconTone,
+  type CategoryIconTone
+} from "../data/categoryIconTemplates";
 import type { CategoryIconKey } from "../types/CategoryIconKey";
+import CategoryIcon from "./CategoryIcon";
 
 export type CategoryFilterOption = {
+  value: string;
   name: string;
   iconKey?: CategoryIconKey;
   count: number;
@@ -14,6 +19,7 @@ type CategoryFilterProps = {
 };
 
 const allCategory = "すべて";
+const allCategoryTone: CategoryIconTone = getCategoryIconTone("seasoning-other");
 
 export default function CategoryFilter({
   categories,
@@ -22,6 +28,7 @@ export default function CategoryFilter({
 }: CategoryFilterProps) {
   const categoryOptions: CategoryFilterOption[] = [
     {
+      value: allCategory,
       name: allCategory,
       iconKey: "seasoning-other",
       count: categories.reduce((total, category) => total + category.count, 0)
@@ -34,29 +41,30 @@ export default function CategoryFilter({
       aria-label="カテゴリー絞り込み"
       className="-mx-4 overflow-x-auto px-4 pb-1 scrollbar-none"
     >
-      <div className="grid auto-cols-[6.25rem] grid-flow-col gap-2 pr-12">
+      <div className="grid auto-cols-[4.8rem] grid-flow-col gap-2 pr-12">
         {categoryOptions.map((category) => {
-          const isSelected = category.name === selectedCategory;
+          const isSelected = category.value === selectedCategory;
+          const tone = category.iconKey
+            ? getCategoryIconTone(category.iconKey)
+            : allCategoryTone;
 
           return (
             <button
-              key={category.name}
+              key={category.value}
               type="button"
-              onClick={() => onSelect(category.name)}
-              className={`flex h-20 flex-col items-start justify-between rounded-lg border p-3 text-left transition ${
-                isSelected
-                  ? "border-teal-800 bg-teal-800 text-white shadow-sm"
-                  : "border-gray-200 bg-white text-gray-800"
+              onClick={() => onSelect(category.value)}
+              className={`flex h-[5.6rem] flex-col items-center justify-between rounded-lg border p-2 text-center shadow-sm transition ${
+                isSelected ? tone.tileSelected : tone.tileUnselected
               }`}
             >
               <CategoryIcon iconKey={category.iconKey} className="h-6 w-6" />
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-bold leading-5">
+              <span className="w-full min-w-0">
+                <span className="block truncate text-xs font-bold leading-4">
                   {category.name}
                 </span>
                 <span
-                  className={`block text-xs font-semibold leading-4 ${
-                    isSelected ? "text-teal-50" : "text-gray-500"
+                  className={`mx-auto mt-1 block w-fit rounded-full px-2 py-0.5 text-[11px] font-bold leading-3 ${
+                    isSelected ? tone.tileCountSelected : tone.tileCountUnselected
                   }`}
                 >
                   {category.count}件
