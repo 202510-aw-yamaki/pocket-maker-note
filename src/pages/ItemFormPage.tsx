@@ -1,9 +1,15 @@
 import { FormEvent, useEffect, useState } from "react";
+import CategoryIconPicker from "../components/CategoryIconPicker";
 import PhotoInput from "../components/PhotoInput";
+import {
+  defaultCategoryIconKey,
+  resolveCategoryIconKey
+} from "../data/categoryIconTemplates";
 import {
   listPocketItemCategories,
   listPocketItemMakers
 } from "../db/pocketItemsDb";
+import type { CategoryIconKey } from "../types/CategoryIconKey";
 import type { PocketItem, PocketItemInput } from "../types/PocketItem";
 
 type ItemFormPageProps = {
@@ -17,6 +23,7 @@ const emptyInput: PocketItemInput = {
   itemName: "",
   makerName: "",
   categoryName: "",
+  categoryIconKey: defaultCategoryIconKey,
   productDetail: "",
   photoDataUrl: "",
   lastPurchasedAt: "",
@@ -32,6 +39,10 @@ const createInitialInput = (item?: PocketItem): PocketItemInput => {
     itemName: item.itemName,
     makerName: item.makerName,
     categoryName: item.categoryName,
+    categoryIconKey: resolveCategoryIconKey(
+      item.categoryName,
+      item.categoryIconKey
+    ),
     productDetail: item.productDetail,
     photoDataUrl: item.photoDataUrl,
     lastPurchasedAt: item.lastPurchasedAt,
@@ -157,6 +168,30 @@ export default function ItemFormPage({
     }));
   };
 
+  const updateCategoryName = (value: string, forceInferIcon = false) => {
+    setInput((current) => {
+      const shouldInferIcon =
+        forceInferIcon ||
+        !current.categoryIconKey ||
+        current.categoryIconKey === defaultCategoryIconKey;
+
+      return {
+        ...current,
+        categoryName: value,
+        categoryIconKey: shouldInferIcon
+          ? resolveCategoryIconKey(value)
+          : current.categoryIconKey
+      };
+    });
+  };
+
+  const updateCategoryIcon = (value: CategoryIconKey) => {
+    setInput((current) => ({
+      ...current,
+      categoryIconKey: value
+    }));
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const requiredFields = [
@@ -253,11 +288,16 @@ export default function ItemFormPage({
                 setIsMakerMenuOpen(false);
               }}
               onSelect={(category) => {
-                updateField("categoryName", category);
+                updateCategoryName(category, true);
                 setIsCategoryMenuOpen(false);
               }}
-              onChange={(value) => updateField("categoryName", value)}
+              onChange={(value) => updateCategoryName(value)}
               placeholder="調味料"
+            />
+
+            <CategoryIconPicker
+              value={input.categoryIconKey}
+              onChange={updateCategoryIcon}
             />
 
             <label className="block space-y-2">
