@@ -29,6 +29,8 @@ class PocketItemsDatabase extends Dexie {
 
 export const pocketItemsDb = new PocketItemsDatabase();
 const sampleSeededKey = "sample-seeded";
+const maxCategoryOptions = 10;
+const maxMakerOptions = 20;
 
 const createItemId = () => {
   if (globalThis.crypto?.randomUUID) {
@@ -60,7 +62,16 @@ export const listPocketItemCategories = async () => {
 
   return Array.from(new Set(categories)).sort((current, next) =>
     current.localeCompare(next, "ja")
-  );
+  ).slice(0, maxCategoryOptions);
+};
+
+export const listPocketItemMakers = async () => {
+  const items = await pocketItemsDb.pocketItems.toArray();
+  const makers = items.map((item) => item.makerName.trim()).filter(Boolean);
+
+  return Array.from(new Set(makers)).sort((current, next) =>
+    current.localeCompare(next, "ja")
+  ).slice(0, maxMakerOptions);
 };
 
 export const getPocketItem = async (id: string) => {

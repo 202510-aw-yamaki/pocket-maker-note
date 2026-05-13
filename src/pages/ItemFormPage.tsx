@@ -1,6 +1,9 @@
 import { FormEvent, useEffect, useState } from "react";
 import PhotoInput from "../components/PhotoInput";
-import { listPocketItemCategories } from "../db/pocketItemsDb";
+import {
+  listPocketItemCategories,
+  listPocketItemMakers
+} from "../db/pocketItemsDb";
 import type { PocketItem, PocketItemInput } from "../types/PocketItem";
 
 type ItemFormPageProps = {
@@ -36,6 +39,84 @@ const createInitialInput = (item?: PocketItem): PocketItemInput => {
   };
 };
 
+type OptionMenuProps = {
+  id: string;
+  label: string;
+  value: string;
+  options: string[];
+  isOpen: boolean;
+  onToggle: () => void;
+  onSelect: (value: string) => void;
+  onChange: (value: string) => void;
+  placeholder: string;
+};
+
+function OptionMenuField({
+  id,
+  label,
+  value,
+  options,
+  isOpen,
+  onToggle,
+  onSelect,
+  onChange,
+  placeholder
+}: OptionMenuProps) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <label htmlFor={id} className="block text-sm font-bold text-gray-800">
+          {label}
+        </label>
+        <button
+          type="button"
+          onClick={onToggle}
+          disabled={options.length === 0}
+          aria-expanded={isOpen}
+          aria-controls={`${id}Options`}
+          className="min-h-9 rounded-full border border-teal-200 bg-teal-50 px-3 text-sm font-bold text-teal-800 disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
+        >
+          選択
+        </button>
+      </div>
+      <div className="relative">
+        <input
+          id={id}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-12 w-full rounded-lg border border-gray-300 px-4 text-base outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-100"
+          placeholder={placeholder}
+        />
+        {isOpen ? (
+          <div
+            id={`${id}Options`}
+            className="absolute left-0 right-0 top-full z-20 mt-2 max-h-56 overflow-y-auto rounded-lg border border-gray-200 bg-white p-2 shadow-lg"
+          >
+            {options.map((option) => {
+              const isSelected = option === value;
+
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => onSelect(option)}
+                  className={`min-h-11 w-full rounded-md px-3 text-left text-base font-semibold ${
+                    isSelected
+                      ? "bg-teal-800 text-white"
+                      : "text-gray-800 hover:bg-teal-50"
+                  }`}
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export default function ItemFormPage({
   mode,
   initialItem,
@@ -45,22 +126,28 @@ export default function ItemFormPage({
   const [input, setInput] = useState<PocketItemInput>(() =>
     createInitialInput(initialItem)
   );
+  const [makerOptions, setMakerOptions] = useState<string[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
+  const [isMakerMenuOpen, setIsMakerMenuOpen] = useState(false);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const loadCategories = async () => {
+    const loadOptions = async () => {
       try {
-        const categories = await listPocketItemCategories();
+        const [makers, categories] = await Promise.all([
+          listPocketItemMakers(),
+          listPocketItemCategories()
+        ]);
+        setMakerOptions(makers);
         setCategoryOptions(categories);
       } catch (error) {
         console.error(error);
       }
     };
 
-    void loadCategories();
+    void loadOptions();
   }, []);
 
   const updateField = (field: keyof PocketItemInput, value: string) => {
@@ -137,81 +224,41 @@ export default function ItemFormPage({
               />
             </label>
 
-            <label className="block space-y-2">
-              <span className="block text-sm font-bold text-gray-800">
-                メーカー名
-              </span>
-              <input
-                value={input.makerName}
-                onChange={(event) =>
-                  updateField("makerName", event.target.value)
-                }
-                className="h-12 w-full rounded-lg border border-gray-300 px-4 text-base outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-100"
-                placeholder="キッコーマン"
-              />
-            </label>
+            <OptionMenuField
+              id="makerName"
+              label="メーカー名"
+              value={input.makerName}
+              options={makerOptions}
+              isOpen={isMakerMenuOpen}
+              onToggle={() => {
+                setIsMakerMenuOpen((currentValue) => !currentValue);
+                setIsCategoryMenuOpen(false);
+              }}
+              onSelect={(maker) => {
+                updateField("makerName", maker);
+                setIsMakerMenuOpen(false);
+              }}
+              onChange={(value) => updateField("makerName", value)}
+              placeholder="キッコーマン"
+            />
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-3">
-                <label
-                  htmlFor="categoryName"
-                  className="block text-sm font-bold text-gray-800"
-                >
-                  カテゴリー
-                </label>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setIsCategoryMenuOpen((currentValue) => !currentValue)
-                  }
-                  disabled={categoryOptions.length === 0}
-                  aria-expanded={isCategoryMenuOpen}
-                  aria-controls="categoryOptions"
-                  className="min-h-9 rounded-full border border-teal-200 bg-teal-50 px-3 text-sm font-bold text-teal-800 disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
-                >
-                  選択
-                </button>
-              </div>
-              <div className="relative">
-              <input
-                id="categoryName"
-                value={input.categoryName}
-                onChange={(event) =>
-                  updateField("categoryName", event.target.value)
-                }
-                className="h-12 w-full rounded-lg border border-gray-300 px-4 text-base outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-100"
-                placeholder="調味料"
-              />
-                {isCategoryMenuOpen ? (
-                  <div
-                    id="categoryOptions"
-                    className="absolute left-0 right-0 top-full z-20 mt-2 max-h-56 overflow-y-auto rounded-lg border border-gray-200 bg-white p-2 shadow-lg"
-                  >
-                    {categoryOptions.map((category) => {
-                      const isSelected = category === input.categoryName;
-
-                      return (
-                        <button
-                          key={category}
-                          type="button"
-                          onClick={() => {
-                            updateField("categoryName", category);
-                            setIsCategoryMenuOpen(false);
-                          }}
-                          className={`min-h-11 w-full rounded-md px-3 text-left text-base font-semibold ${
-                            isSelected
-                              ? "bg-teal-800 text-white"
-                              : "text-gray-800 hover:bg-teal-50"
-                          }`}
-                        >
-                          {category}
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : null}
-              </div>
-            </div>
+            <OptionMenuField
+              id="categoryName"
+              label="カテゴリー"
+              value={input.categoryName}
+              options={categoryOptions}
+              isOpen={isCategoryMenuOpen}
+              onToggle={() => {
+                setIsCategoryMenuOpen((currentValue) => !currentValue);
+                setIsMakerMenuOpen(false);
+              }}
+              onSelect={(category) => {
+                updateField("categoryName", category);
+                setIsCategoryMenuOpen(false);
+              }}
+              onChange={(value) => updateField("categoryName", value)}
+              placeholder="調味料"
+            />
 
             <label className="block space-y-2">
               <span className="block text-sm font-bold text-gray-800">
