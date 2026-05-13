@@ -27,11 +27,14 @@ type AppView =
 
 export default function App() {
   const [view, setView] = useState<AppView>({ name: "list" });
+  const [saveMessage, setSaveMessage] = useState("");
 
   if (view.name === "detail") {
     return (
       <ItemDetailPage
         itemId={view.itemId}
+        saveMessage={saveMessage}
+        onClearSaveMessage={() => setSaveMessage("")}
         onBack={() => setView({ name: "list" })}
         onEdit={(item) => setView({ name: "edit", item })}
         onDelete={async (itemId) => {
@@ -49,6 +52,7 @@ export default function App() {
         onBack={() => setView({ name: "list" })}
         onSubmit={async (input: PocketItemInput) => {
           await addPocketItem(input);
+          setSaveMessage("保存しました。");
           setView({ name: "list" });
         }}
       />
@@ -63,6 +67,7 @@ export default function App() {
         onBack={() => setView({ name: "detail", itemId: view.item.id })}
         onSubmit={async (input: PocketItemInput) => {
           await updatePocketItem(view.item.id, input);
+          setSaveMessage("保存しました。");
           setView({ name: "detail", itemId: view.item.id });
         }}
       />
@@ -71,6 +76,8 @@ export default function App() {
 
   return (
     <ItemListPage
+      saveMessage={saveMessage}
+      onClearSaveMessage={() => setSaveMessage("")}
       onSelectItem={(itemId) => setView({ name: "detail", itemId })}
       onAddItem={() => setView({ name: "add" })}
     />

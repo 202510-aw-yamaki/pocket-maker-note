@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import CategoryIconPicker from "../components/CategoryIconPicker";
 import PhotoInput from "../components/PhotoInput";
 import {
@@ -46,6 +46,19 @@ const createInitialInput = (item?: PocketItem): PocketItemInput => {
     lastPurchasedAt: item.lastPurchasedAt,
     memo: item.memo
   };
+};
+
+const isSameInput = (current: PocketItemInput, initial: PocketItemInput) => {
+  return (
+    current.itemName === initial.itemName &&
+    current.makerName === initial.makerName &&
+    current.categoryName === initial.categoryName &&
+    current.categoryIconKey === initial.categoryIconKey &&
+    current.productDetail === initial.productDetail &&
+    current.photoDataUrl === initial.photoDataUrl &&
+    current.lastPurchasedAt === initial.lastPurchasedAt &&
+    current.memo === initial.memo
+  );
 };
 
 type OptionMenuProps = {
@@ -132,9 +145,11 @@ export default function ItemFormPage({
   onBack,
   onSubmit
 }: ItemFormPageProps) {
-  const [input, setInput] = useState<PocketItemInput>(() =>
-    createInitialInput(initialItem)
+  const initialInput = useMemo(
+    () => createInitialInput(initialItem),
+    [initialItem]
   );
+  const [input, setInput] = useState<PocketItemInput>(() => initialInput);
   const [makerOptions, setMakerOptions] = useState<string[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
   const [isMakerMenuOpen, setIsMakerMenuOpen] = useState(false);
@@ -142,6 +157,7 @@ export default function ItemFormPage({
   const [hasManualCategoryIcon, setHasManualCategoryIcon] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const isDirty = !isSameInput(input, initialInput);
 
   useEffect(() => {
     const loadOptions = async () => {
@@ -159,6 +175,20 @@ export default function ItemFormPage({
 
     void loadOptions();
   }, []);
+
+  useEffect(() => {
+    if (!isDirty) {
+      return;
+    }
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const updateField = (field: keyof PocketItemInput, value: string) => {
     setInput((current) => ({
@@ -194,9 +224,20 @@ export default function ItemFormPage({
   };
 
   const resetInput = () => {
-    setInput(createInitialInput(initialItem));
+    setInput(initialInput);
     setHasManualCategoryIcon(false);
     setErrorMessage("");
+  };
+
+  const handleBack = () => {
+    if (
+      isDirty &&
+      !window.confirm("保存されていない変更があります。移動しますか？")
+    ) {
+      return;
+    }
+
+    onBack();
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -232,7 +273,7 @@ export default function ItemFormPage({
         <header className="mb-4 grid min-h-11 grid-cols-[4.5rem_1fr_4.5rem] items-center gap-2">
           <button
             type="button"
-            onClick={onBack}
+            onClick={handleBack}
             className="justify-self-start text-base font-bold text-gray-900"
           >
             ‹ 戻る

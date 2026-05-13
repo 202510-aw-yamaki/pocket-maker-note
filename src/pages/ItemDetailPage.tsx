@@ -7,9 +7,12 @@ import {
 } from "../data/categoryIconTemplates";
 import { getPocketItem } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
+import { sharePocketItem } from "../utils/sharePocketItem";
 
 type ItemDetailPageProps = {
   itemId: string;
+  saveMessage?: string;
+  onClearSaveMessage?: () => void;
   onBack: () => void;
   onEdit: (item: PocketItem) => void;
   onDelete: (itemId: string) => Promise<void>;
@@ -25,6 +28,8 @@ const formatDate = (date: string) => {
 
 export default function ItemDetailPage({
   itemId,
+  saveMessage = "",
+  onClearSaveMessage,
   onBack,
   onEdit,
   onDelete
@@ -32,6 +37,8 @@ export default function ItemDetailPage({
   const [item, setItem] = useState<PocketItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareLabel, setShareLabel] = useState("共有する");
   const [errorMessage, setErrorMessage] = useState("");
   const categoryIconKey = item
     ? resolvePocketItemCategoryIconKey(item)
@@ -60,6 +67,45 @@ export default function ItemDetailPage({
 
     void loadItem();
   }, [itemId]);
+
+  useEffect(() => {
+    if (!saveMessage || !onClearSaveMessage) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(onClearSaveMessage, 2500);
+    return () => window.clearTimeout(timeoutId);
+  }, [onClearSaveMessage, saveMessage]);
+
+  const handleShare = async () => {
+    if (!item) {
+      return;
+    }
+
+    setIsSharing(true);
+
+    try {
+      const result = await sharePocketItem(item);
+
+      if (result === "shared") {
+        setShareLabel("共有済み");
+      }
+
+      if (result === "copied") {
+        setShareLabel("コピー済み");
+      }
+
+      if (result !== "cancelled") {
+        window.setTimeout(() => setShareLabel("共有する"), 2000);
+      }
+    } catch (error) {
+      setShareLabel("失敗");
+      window.setTimeout(() => setShareLabel("共有する"), 2000);
+      console.error(error);
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!item) {
@@ -99,12 +145,19 @@ export default function ItemDetailPage({
           </button>
           <button
             type="button"
-            aria-label="その他"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-gray-900"
+            onClick={handleShare}
+            disabled={!item || isSharing}
+            className="min-h-10 rounded-full border border-teal-200 bg-white px-4 text-sm font-bold text-teal-800 disabled:cursor-wait disabled:border-gray-200 disabled:text-gray-400"
           >
-            …
+            {isSharing ? "準備中" : shareLabel}
           </button>
         </header>
+
+        {saveMessage ? (
+          <p className="mb-4 rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-bold text-teal-800">
+            {saveMessage}
+          </p>
+        ) : null}
 
         {isLoading ? (
           <p className="rounded-lg bg-white p-4 text-gray-700">
@@ -123,7 +176,7 @@ export default function ItemDetailPage({
             <section className="space-y-4">
               <span className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold ${categoryTone.tileSelected}`}>
                 <CategoryIcon iconKey={categoryIconKey} className="h-5 w-5" />
-                {categoryTemplate.label}
+                {item.categoryName || categoryTemplate.label}
               </span>
 
               <div>

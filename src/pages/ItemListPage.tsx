@@ -18,6 +18,8 @@ import type { PocketItem } from "../types/PocketItem";
 type ItemListPageProps = {
   onSelectItem: (itemId: string) => void;
   onAddItem: () => void;
+  saveMessage?: string;
+  onClearSaveMessage?: () => void;
 };
 
 type ItemGroup = CategoryFilterOption & {
@@ -37,7 +39,9 @@ const getItemDateTime = (item: PocketItem) => {
 
 export default function ItemListPage({
   onSelectItem,
-  onAddItem
+  onAddItem,
+  saveMessage = "",
+  onClearSaveMessage
 }: ItemListPageProps) {
   const [items, setItems] = useState<PocketItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,22 +67,43 @@ export default function ItemListPage({
     void loadItems();
   }, []);
 
+  useEffect(() => {
+    if (!saveMessage || !onClearSaveMessage) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(onClearSaveMessage, 2500);
+    return () => window.clearTimeout(timeoutId);
+  }, [onClearSaveMessage, saveMessage]);
+
+  const getItemCategory = (item: PocketItem) => {
+    const iconKey = resolvePocketItemCategoryIconKey(item);
+    const categoryName =
+      item.categoryName.trim() || getCategoryIconTemplate(iconKey).label;
+
+    return {
+      iconKey,
+      name: categoryName,
+      value: `${iconKey}:${categoryName}`
+    };
+  };
+
   const categories = useMemo<CategoryFilterOption[]>(() => {
     const categoryMap = new Map<string, CategoryFilterOption>();
 
     items.forEach((item) => {
-      const iconKey = resolvePocketItemCategoryIconKey(item);
-      const category = categoryMap.get(iconKey);
+      const itemCategory = getItemCategory(item);
+      const category = categoryMap.get(itemCategory.value);
 
       if (category) {
         category.count += 1;
         return;
       }
 
-      categoryMap.set(iconKey, {
-        value: iconKey,
-        name: getCategoryIconTemplate(iconKey).label,
-        iconKey,
+      categoryMap.set(itemCategory.value, {
+        value: itemCategory.value,
+        name: itemCategory.name,
+        iconKey: itemCategory.iconKey,
         count: 1
       });
     });
@@ -95,7 +120,7 @@ export default function ItemListPage({
     return items.filter((item) => {
       const matchesCategory =
         selectedCategory === allCategory ||
-        resolvePocketItemCategoryIconKey(item) === selectedCategory;
+        getItemCategory(item).value === selectedCategory;
       const searchableText = [
         item.itemName,
         item.makerName,
@@ -116,8 +141,8 @@ export default function ItemListPage({
     const groupMap = new Map<string, ItemGroup>();
 
     filteredItems.forEach((item) => {
-      const iconKey = resolvePocketItemCategoryIconKey(item);
-      const existingGroup = groupMap.get(iconKey);
+      const itemCategory = getItemCategory(item);
+      const existingGroup = groupMap.get(itemCategory.value);
 
       if (existingGroup) {
         existingGroup.count += 1;
@@ -126,10 +151,10 @@ export default function ItemListPage({
         return;
       }
 
-      groupMap.set(iconKey, {
-        value: iconKey,
-        name: getCategoryIconTemplate(iconKey).label,
-        iconKey,
+      groupMap.set(itemCategory.value, {
+        value: itemCategory.value,
+        name: itemCategory.name,
+        iconKey: itemCategory.iconKey,
         count: 1,
         items: [item]
       });
@@ -165,6 +190,11 @@ export default function ItemListPage({
         </header>
 
         <section className="sticky top-0 z-10 mb-3 space-y-3 bg-slate-50 pb-3">
+          {saveMessage ? (
+            <p className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-bold text-teal-800">
+              {saveMessage}
+            </p>
+          ) : null}
           <SearchBox value={searchQuery} onChange={setSearchQuery} />
           <CategoryFilter
             categories={categories}
