@@ -189,7 +189,7 @@ export default function ItemListPage({
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 pb-24 pt-4">
         <section className="sticky top-0 z-10 mb-3 space-y-3 bg-[#FCEED0] pb-3 pt-4">
           <div className="grid min-h-12 grid-cols-[3.5rem_1fr_3.5rem] items-center gap-2">
-            <span className="text-sm font-bold text-gray-800">検索</span>
+            <span aria-hidden="true" />
             <img
               src="/pocket-maker-note/image/head.png"
               alt="いつも買ってるあのメーカー ポケット帳"

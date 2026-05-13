@@ -306,7 +306,7 @@ export default function ItemFormPage({
                 value={input.itemName}
                 onChange={(event) => updateField("itemName", event.target.value)}
                 className="h-12 w-full rounded-lg border border-gray-300 px-4 text-base outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-100"
-                placeholder="醤油"
+                placeholder="商品"
               />
             </label>
 
@@ -325,7 +325,7 @@ export default function ItemFormPage({
                 setIsMakerMenuOpen(false);
               }}
               onChange={(value) => updateField("makerName", value)}
-              placeholder="キッコーマン"
+              placeholder="メーカー"
             />
 
             <OptionMenuField
@@ -361,7 +361,7 @@ export default function ItemFormPage({
                   updateField("productDetail", event.target.value)
                 }
                 className="h-12 w-full rounded-lg border border-gray-300 px-4 text-base outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-100"
-                placeholder="特選 丸大豆しょうゆ 1L"
+                placeholder="商品名や大きさ"
               />
             </label>
 
@@ -394,7 +394,7 @@ export default function ItemFormPage({
                 onChange={(event) => updateField("memo", event.target.value)}
                 rows={4}
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-100"
-                placeholder="赤いキャップのやつ。減塩ではない。"
+                placeholder="わかりやすい一言コメント"
               />
             </label>
           </div>

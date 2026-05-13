@@ -135,19 +135,24 @@ export default function ItemDetailPage({
   return (
     <main className="min-h-screen bg-[#FCEED0] text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-6 pt-4">
-        <header className="mb-4 flex min-h-11 items-center justify-between">
+        <header className="sticky top-0 z-10 mb-4 grid min-h-12 grid-cols-[4.75rem_1fr_4.75rem] items-center gap-2 bg-[#FCEED0] pb-3 pt-4">
           <button
             type="button"
             onClick={onBack}
-            className="min-h-10 rounded-full px-1 text-base font-bold text-gray-900"
+            className="min-h-10 justify-self-start rounded-full px-1 text-base font-bold text-gray-900"
           >
             ‹ 戻る
           </button>
+          <img
+            src="/pocket-maker-note/image/head.png"
+            alt="いつも買ってるあのメーカー ポケット帳"
+            className="mx-auto h-12 w-auto max-w-full object-contain"
+          />
           <button
             type="button"
             onClick={handleShare}
             disabled={!item || isSharing}
-            className="min-h-10 rounded-full border border-teal-200 bg-white px-4 text-sm font-bold text-teal-800 disabled:cursor-wait disabled:border-gray-200 disabled:text-gray-400"
+            className="min-h-10 justify-self-end whitespace-nowrap rounded-full border border-teal-200 bg-white px-2 text-sm font-bold text-teal-800 disabled:cursor-wait disabled:border-gray-200 disabled:text-gray-400"
           >
             {isSharing ? "準備中" : shareLabel}
           </button>
@@ -181,11 +186,11 @@ export default function ItemDetailPage({
                     {item.categoryName || categoryTemplate.label}
                   </span>
                 </span>
-                <div className="min-w-0">
-                  <h1 className="truncate text-2xl font-bold leading-tight text-gray-950">
+                <div className="flex min-w-0 flex-1 items-baseline gap-2">
+                  <h1 className="min-w-0 truncate text-2xl font-bold leading-tight text-gray-950">
                     {item.itemName}
                   </h1>
-                  <p className="mt-1 truncate text-base font-bold leading-tight text-gray-700">
+                  <p className="shrink-0 truncate text-base font-bold leading-tight text-gray-700">
                     {item.makerName}
                   </p>
                 </div>
