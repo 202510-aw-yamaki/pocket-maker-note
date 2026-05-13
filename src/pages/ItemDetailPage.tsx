@@ -135,7 +135,7 @@ export default function ItemDetailPage({
   return (
     <main className="min-h-screen bg-[#FCEED0] text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-6 pt-4">
-        <header className="sticky top-0 z-10 mb-4 grid min-h-12 grid-cols-[4.75rem_1fr_4.75rem] items-center gap-2 bg-[#FCEED0] pb-3 pt-4">
+        <header className="sticky top-0 z-10 mb-4 grid min-h-12 grid-cols-[4.75rem_1fr_4.75rem] items-center gap-0 bg-[#FCEED0] pb-3 pt-4">
           <button
             type="button"
             onClick={onBack}
