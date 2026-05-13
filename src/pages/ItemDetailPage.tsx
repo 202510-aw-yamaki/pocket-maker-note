@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import CategoryIcon from "../components/CategoryIcon";
-import { resolvePocketItemCategoryIconKey } from "../data/categoryIconTemplates";
+import {
+  getCategoryIconTemplate,
+  getCategoryIconTone,
+  resolvePocketItemCategoryIconKey
+} from "../data/categoryIconTemplates";
 import { getPocketItem } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
 
@@ -16,7 +20,7 @@ const formatDate = (date: string) => {
     return "未登録";
   }
 
-  return date;
+  return date.replaceAll("-", "/");
 };
 
 export default function ItemDetailPage({
@@ -32,6 +36,8 @@ export default function ItemDetailPage({
   const categoryIconKey = item
     ? resolvePocketItemCategoryIconKey(item)
     : undefined;
+  const categoryTemplate = getCategoryIconTemplate(categoryIconKey);
+  const categoryTone = getCategoryIconTone(categoryIconKey);
 
   useEffect(() => {
     const loadItem = async () => {
@@ -81,15 +87,24 @@ export default function ItemDetailPage({
   };
 
   return (
-    <main className="min-h-screen bg-sky-50 text-gray-950">
+    <main className="min-h-screen bg-slate-50 text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-6 pt-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="mb-4 min-h-11 self-start rounded-full border border-gray-300 bg-white px-4 text-sm font-bold text-gray-800"
-        >
-          ← 戻る
-        </button>
+        <header className="mb-4 flex min-h-11 items-center justify-between">
+          <button
+            type="button"
+            onClick={onBack}
+            className="min-h-10 rounded-full px-1 text-base font-bold text-gray-900"
+          >
+            ‹ 戻る
+          </button>
+          <button
+            type="button"
+            aria-label="その他"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-2xl font-bold text-gray-900"
+          >
+            …
+          </button>
+        </header>
 
         {isLoading ? (
           <p className="rounded-lg bg-white p-4 text-gray-700">
@@ -105,77 +120,84 @@ export default function ItemDetailPage({
 
         {item ? (
           <article className="space-y-5">
-            <div className="flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-lg bg-teal-50 text-sm font-bold text-teal-800">
-              {item.photoDataUrl ? (
-                <img
-                  src={item.photoDataUrl}
-                  alt={`${item.itemName}の写真`}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span>写真未登録</span>
-              )}
-            </div>
+            <section className="space-y-4">
+              <span className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold ${categoryTone.tileSelected}`}>
+                <CategoryIcon iconKey={categoryIconKey} className="h-5 w-5" />
+                {categoryTemplate.label}
+              </span>
 
-            <section className="space-y-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
               <div>
-                <p className="text-3xl font-bold leading-tight text-teal-900">
+                <p className="text-2xl font-bold leading-tight text-gray-950">
                   {item.makerName}
                 </p>
-                <h1 className="mt-2 text-2xl font-bold leading-tight">
+                <h1 className="mt-2 break-keep text-4xl font-bold leading-tight tracking-normal text-gray-950">
                   {item.itemName}
                 </h1>
+                <p className="mt-2 text-xl leading-7 text-gray-800">
+                  {item.productDetail}
+                </p>
               </div>
 
-              <p className="text-lg font-semibold leading-7 text-gray-800">
-                {item.productDetail}
-              </p>
+              <div className="mx-auto flex aspect-[3/4] w-56 items-center justify-center overflow-hidden rounded-lg bg-white text-sm font-bold text-gray-500">
+                {item.photoDataUrl ? (
+                  <img
+                    src={item.photoDataUrl}
+                    alt={`${item.itemName}の写真`}
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <span>写真未登録</span>
+                )}
+              </div>
+            </section>
 
-              <dl className="space-y-3 text-base leading-7">
-                <div>
-                  <dt className="text-sm font-bold text-gray-500">
-                    カテゴリー
-                  </dt>
-                  <dd className="mt-1 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 font-semibold text-emerald-800">
-                    <CategoryIcon
-                      iconKey={categoryIconKey}
-                      className="h-5 w-5"
-                    />
-                    <span>{item.categoryName}</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-bold text-gray-500">
-                    最後に買った日
-                  </dt>
-                  <dd className="font-semibold">
-                    {formatDate(item.lastPurchasedAt)}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-bold text-gray-500">メモ</dt>
-                  <dd className="whitespace-pre-wrap font-semibold">
-                    {item.memo || "未登録"}
-                  </dd>
-                </div>
-              </dl>
+            <section className="space-y-3">
+              <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
+                <span className="text-sm font-bold text-gray-600">
+                  最終購入日
+                </span>
+                <span className="text-2xl font-bold text-gray-950">
+                  {formatDate(item.lastPurchasedAt)}
+                </span>
+              </div>
+
+              <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
+                <dl className="divide-y divide-gray-100 text-base leading-7">
+                  <div className="grid grid-cols-[5.5rem_1fr] gap-3 py-1">
+                    <dt className="text-sm font-bold text-gray-500">
+                      カテゴリー
+                    </dt>
+                    <dd className="font-semibold text-gray-900">
+                      {item.categoryName || categoryTemplate.label}
+                    </dd>
+                  </div>
+                  <div className="grid grid-cols-[5.5rem_1fr] gap-3 py-3">
+                    <dt className="text-sm font-bold text-gray-500">
+                      メモ
+                    </dt>
+                    <dd className="whitespace-pre-wrap font-semibold text-gray-900">
+                      {item.memo || "未登録"}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
             </section>
 
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => onEdit(item)}
-                className="min-h-12 rounded-lg bg-teal-800 px-4 text-base font-bold text-white"
+                className="min-h-14 rounded-lg border border-teal-800 bg-white px-4 text-base font-bold text-teal-800"
               >
-                編集
+                編集する
               </button>
               <button
                 type="button"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="min-h-12 rounded-lg border border-red-200 bg-white px-4 text-base font-bold text-red-700 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+                className="min-h-14 rounded-lg border border-red-500 bg-white px-4 text-base font-bold text-red-600 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
               >
-                {isDeleting ? "削除中" : "削除"}
+                {isDeleting ? "削除中" : "削除する"}
               </button>
             </div>
           </article>
