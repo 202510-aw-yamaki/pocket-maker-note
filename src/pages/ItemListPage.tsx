@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import CategoryFilter, { allCategory } from "../components/CategoryFilter";
+import CategoryFilter, {
+  allCategory,
+  type CategoryFilterOption
+} from "../components/CategoryFilter";
 import ItemCard from "../components/ItemCard";
 import SearchBox from "../components/SearchBox";
+import { resolveCategoryIconKey } from "../data/categoryIconTemplates";
 import { listPocketItems, seedPocketItemsIfEmpty } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
 
@@ -37,13 +41,24 @@ export default function ItemListPage({
     void loadItems();
   }, []);
 
-  const categories = useMemo(() => {
-    const categorySet = new Set(
-      items.map((item) => item.categoryName).filter(Boolean)
-    );
+  const categories = useMemo<CategoryFilterOption[]>(() => {
+    const categoryMap = new Map<string, CategoryFilterOption>();
 
-    return Array.from(categorySet).sort((current, next) =>
-      current.localeCompare(next, "ja")
+    items.forEach((item) => {
+      const categoryName = item.categoryName.trim();
+
+      if (!categoryName || categoryMap.has(categoryName)) {
+        return;
+      }
+
+      categoryMap.set(categoryName, {
+        name: categoryName,
+        iconKey: resolveCategoryIconKey(categoryName, item.categoryIconKey)
+      });
+    });
+
+    return Array.from(categoryMap.values()).sort((current, next) =>
+      current.name.localeCompare(next.name, "ja")
     );
   }, [items]);
 

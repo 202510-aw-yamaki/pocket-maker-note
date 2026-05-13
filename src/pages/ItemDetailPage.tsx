@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import CategoryIcon from "../components/CategoryIcon";
+import { resolveCategoryIconKey } from "../data/categoryIconTemplates";
 import { getPocketItem } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
 
@@ -27,6 +29,9 @@ export default function ItemDetailPage({
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const categoryIconKey = item
+    ? resolveCategoryIconKey(item.categoryName, item.categoryIconKey)
+    : undefined;
 
   useEffect(() => {
     const loadItem = async () => {
@@ -131,7 +136,13 @@ export default function ItemDetailPage({
                   <dt className="text-sm font-bold text-gray-500">
                     カテゴリー
                   </dt>
-                  <dd className="font-semibold">{item.categoryName}</dd>
+                  <dd className="mt-1 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 font-semibold text-emerald-800">
+                    <CategoryIcon
+                      iconKey={categoryIconKey}
+                      className="h-5 w-5"
+                    />
+                    <span>{item.categoryName}</span>
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-sm font-bold text-gray-500">

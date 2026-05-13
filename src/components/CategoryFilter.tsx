@@ -1,5 +1,13 @@
+import CategoryIcon from "./CategoryIcon";
+import type { CategoryIconKey } from "../types/CategoryIconKey";
+
+export type CategoryFilterOption = {
+  name: string;
+  iconKey?: CategoryIconKey;
+};
+
 type CategoryFilterProps = {
-  categories: string[];
+  categories: CategoryFilterOption[];
   selectedCategory: string;
   onSelect: (category: string) => void;
 };
@@ -11,26 +19,33 @@ export default function CategoryFilter({
   selectedCategory,
   onSelect
 }: CategoryFilterProps) {
-  const categoryOptions = [allCategory, ...categories];
+  const categoryOptions: CategoryFilterOption[] = [
+    {
+      name: allCategory,
+      iconKey: "seasoning-other"
+    },
+    ...categories
+  ];
 
   return (
     <div aria-label="カテゴリー絞り込み" className="overflow-x-auto pb-1">
       <div className="flex min-w-max gap-2">
         {categoryOptions.map((category) => {
-          const isSelected = category === selectedCategory;
+          const isSelected = category.name === selectedCategory;
 
           return (
             <button
-              key={category}
+              key={category.name}
               type="button"
-              onClick={() => onSelect(category)}
-              className={`min-h-11 rounded-full border px-4 text-sm font-bold transition ${
+              onClick={() => onSelect(category.name)}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-bold transition ${
                 isSelected
                   ? "border-teal-800 bg-teal-800 text-white"
                   : "border-gray-300 bg-white text-gray-700"
               }`}
             >
-              {category}
+              <CategoryIcon iconKey={category.iconKey} className="h-4 w-4" />
+              <span>{category.name}</span>
             </button>
           );
         })}

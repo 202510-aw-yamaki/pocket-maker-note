@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { resolveCategoryIconKey } from "../data/categoryIconTemplates";
 import type { PocketItem } from "../types/PocketItem";
 import { sharePocketItem } from "../utils/sharePocketItem";
+import CategoryIcon from "./CategoryIcon";
 
 type ItemCardProps = {
   item: PocketItem;
@@ -18,6 +20,10 @@ const formatDate = (date: string) => {
 export default function ItemCard({ item, onSelect }: ItemCardProps) {
   const [shareLabel, setShareLabel] = useState("共有");
   const [isSharing, setIsSharing] = useState(false);
+  const categoryIconKey = resolveCategoryIconKey(
+    item.categoryName,
+    item.categoryIconKey
+  );
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -85,7 +91,8 @@ export default function ItemCard({ item, onSelect }: ItemCardProps) {
             {item.productDetail}
           </p>
           <div className="flex flex-wrap gap-2 pt-1 text-xs font-semibold">
-            <span className="rounded-full bg-indigo-50 px-2 py-1 text-indigo-800">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-emerald-800">
+              <CategoryIcon iconKey={categoryIconKey} className="h-3.5 w-3.5" />
               {item.categoryName || "未分類"}
             </span>
             <span className="rounded-full bg-gray-100 px-2 py-1 text-gray-700">
