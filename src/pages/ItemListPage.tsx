@@ -188,18 +188,18 @@ export default function ItemListPage({
     <main className="min-h-screen bg-[#FCEED0] text-gray-950">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-3 pb-24 pt-4">
         <section className="sticky top-0 z-10 mb-3 space-y-3 bg-[#FCEED0] pb-3 pt-4">
-          <div className="grid min-h-12 grid-cols-[3.5rem_1fr_3.5rem] items-center gap-2">
+          <div className="grid min-h-12 grid-cols-[4.75rem_1fr_4.75rem] items-center gap-2">
             <span aria-hidden="true" />
             <img
               src="/pocket-maker-note/image/head.png"
               alt="いつも買ってるあのメーカー ポケット帳"
-              className="mx-auto h-12 w-auto max-w-full object-contain"
+              className="h-12 w-auto max-w-full justify-self-end object-contain"
             />
             <button
               type="button"
               onClick={scrollToTop}
               aria-label="先頭へ戻る"
-              className="min-h-10 justify-self-end rounded-full border border-teal-200 bg-white px-3 text-lg font-bold leading-none text-teal-800 shadow-sm"
+              className="min-h-10 w-full justify-self-end rounded-full border border-teal-200 bg-white px-2 text-lg font-bold leading-none text-teal-800 shadow-sm"
             >
               ↑
             </button>

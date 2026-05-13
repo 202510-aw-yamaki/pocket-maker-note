@@ -146,13 +146,13 @@ export default function ItemDetailPage({
           <img
             src="/pocket-maker-note/image/head.png"
             alt="いつも買ってるあのメーカー ポケット帳"
-            className="mx-auto h-12 w-auto max-w-full object-contain"
+            className="h-12 w-auto max-w-full justify-self-end object-contain"
           />
           <button
             type="button"
             onClick={handleShare}
             disabled={!item || isSharing}
-            className="min-h-10 justify-self-end whitespace-nowrap rounded-full border border-teal-200 bg-white px-2 text-sm font-bold text-teal-800 disabled:cursor-wait disabled:border-gray-200 disabled:text-gray-400"
+            className="min-h-10 w-full justify-self-end whitespace-nowrap rounded-full border border-teal-200 bg-white px-2 text-sm font-bold text-teal-800 disabled:cursor-wait disabled:border-gray-200 disabled:text-gray-400"
           >
             {isSharing ? "準備中" : shareLabel}
           </button>
