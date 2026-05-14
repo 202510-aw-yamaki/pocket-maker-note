@@ -175,9 +175,18 @@ export default function ItemListPage({
   }, [filteredItems]);
 
   const toggleExpandedCategory = (categoryValue: string) => {
+    if (selectedCategory !== allCategory && selectedCategory === categoryValue) {
+      return;
+    }
+
     setExpandedCategory((currentValue) =>
       currentValue === categoryValue ? null : categoryValue
     );
+  };
+
+  const handleSelectCategory = (categoryValue: string) => {
+    setSelectedCategory(categoryValue);
+    setExpandedCategory(categoryValue === allCategory ? null : categoryValue);
   };
 
   const scrollToTop = () => {
@@ -217,7 +226,7 @@ export default function ItemListPage({
           <CategoryFilter
             categories={categories}
             selectedCategory={selectedCategory}
-            onSelect={setSelectedCategory}
+            onSelect={handleSelectCategory}
           />
         </section>
 
@@ -237,7 +246,9 @@ export default function ItemListPage({
           <section className="space-y-3" aria-label="登録済み商品">
             {itemGroups.map((group) => {
               const tone = getCategoryIconTone(group.iconKey);
-              const isExpanded = expandedCategory === group.value;
+              const isSelectedGroup =
+                selectedCategory !== allCategory && selectedCategory === group.value;
+              const isExpanded = isSelectedGroup || expandedCategory === group.value;
               const visibleItems = isExpanded ? group.items : group.items.slice(0, 1);
 
               return (
