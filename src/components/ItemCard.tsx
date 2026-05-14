@@ -4,6 +4,7 @@ import {
   resolvePocketItemCategoryIconKey
 } from "../data/categoryIconTemplates";
 import type { PocketItem } from "../types/PocketItem";
+import { getPocketItemDisplayDate } from "../utils/pocketItemDisplayDate";
 import { sharePocketItem } from "../utils/sharePocketItem";
 import CategoryIcon from "./CategoryIcon";
 
@@ -11,14 +12,6 @@ type ItemCardProps = {
   item: PocketItem;
   onSelect: (itemId: string) => void;
   variant?: "default" | "compact";
-};
-
-const formatDate = (date: string) => {
-  if (!date) {
-    return "未登録";
-  }
-
-  return date.replaceAll("-", "/");
 };
 
 export default function ItemCard({
@@ -31,6 +24,7 @@ export default function ItemCard({
   const categoryIconKey = resolvePocketItemCategoryIconKey(item);
   const categoryTone = getCategoryIconTone(categoryIconKey);
   const isCompact = variant === "compact";
+  const displayDate = getPocketItemDisplayDate(item);
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -126,7 +120,7 @@ export default function ItemCard({
               </span>
             ) : null}
             <span className="rounded-full bg-gray-100 px-2 py-1 text-gray-700">
-              最終購入 {formatDate(item.lastPurchasedAt)}
+              {displayDate.shortLabel} {displayDate.formattedDate}
             </span>
           </div>
         </div>

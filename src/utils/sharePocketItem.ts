@@ -1,8 +1,11 @@
 import type { PocketItem } from "../types/PocketItem";
+import { getPocketItemDisplayDate } from "./pocketItemDisplayDate";
 
 export type SharePocketItemResult = "shared" | "copied" | "cancelled";
 
 const createShareText = (item: PocketItem) => {
+  const displayDate = getPocketItemDisplayDate(item);
+
   return [
     "これを買ってきてください。",
     "",
@@ -10,7 +13,7 @@ const createShareText = (item: PocketItem) => {
     `メーカー: ${item.makerName}`,
     `商品詳細: ${item.productDetail}`,
     item.categoryName ? `カテゴリー: ${item.categoryName}` : "",
-    item.lastPurchasedAt ? `最後に買った日: ${item.lastPurchasedAt}` : "",
+    `${displayDate.shareLabel}: ${displayDate.formattedDate}`,
     item.memo ? `メモ: ${item.memo}` : ""
   ]
     .filter(Boolean)

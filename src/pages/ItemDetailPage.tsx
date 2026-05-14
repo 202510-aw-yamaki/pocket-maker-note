@@ -7,6 +7,7 @@ import {
 } from "../data/categoryIconTemplates";
 import { getPocketItem } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
+import { getPocketItemDisplayDate } from "../utils/pocketItemDisplayDate";
 import { sharePocketItem } from "../utils/sharePocketItem";
 
 type ItemDetailPageProps = {
@@ -18,13 +19,6 @@ type ItemDetailPageProps = {
   onDelete: (itemId: string) => Promise<void>;
 };
 
-const formatDate = (date: string) => {
-  if (!date) {
-    return "未登録";
-  }
-
-  return date.replaceAll("-", "/");
-};
 
 export default function ItemDetailPage({
   itemId,
@@ -45,6 +39,7 @@ export default function ItemDetailPage({
     : undefined;
   const categoryTemplate = getCategoryIconTemplate(categoryIconKey);
   const categoryTone = getCategoryIconTone(categoryIconKey);
+  const displayDate = item ? getPocketItemDisplayDate(item) : null;
 
   useEffect(() => {
     const loadItem = async () => {
@@ -216,10 +211,10 @@ export default function ItemDetailPage({
             <section className="space-y-3">
               <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
                 <span className="text-sm font-bold text-gray-600">
-                  最終購入日
+                  {displayDate?.detailLabel}
                 </span>
                 <span className="text-2xl font-bold text-gray-950">
-                  {formatDate(item.lastPurchasedAt)}
+                  {displayDate?.formattedDate}
                 </span>
               </div>
 

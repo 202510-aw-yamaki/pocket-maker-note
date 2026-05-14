@@ -372,8 +372,13 @@ export default function ItemFormPage({
             />
 
             <label className="block space-y-2">
-              <span className="block text-sm font-bold text-gray-800">
-                最後に買った日
+              <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                <span className="text-sm font-bold text-gray-800">
+                  最後に買った日
+                </span>
+                <span className="text-xs font-semibold text-gray-500">
+                  （未入力時は保存日を表示します）
+                </span>
               </span>
               <input
                 type="date"

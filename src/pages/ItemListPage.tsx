@@ -31,7 +31,7 @@ const categoryOrder = new Map(
 );
 
 const getItemDateTime = (item: PocketItem) => {
-  const dateValue = item.lastPurchasedAt || item.updatedAt;
+  const dateValue = item.lastPurchasedAt || item.updatedAt || item.createdAt;
   const time = new Date(dateValue).getTime();
 
   return Number.isNaN(time) ? 0 : time;
