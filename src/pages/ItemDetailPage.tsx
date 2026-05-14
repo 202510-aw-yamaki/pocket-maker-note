@@ -7,6 +7,7 @@ import {
 } from "../data/categoryIconTemplates";
 import { getPocketItem } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
+import headerImageUrl from "../assets/head.png";
 import { getPocketItemDisplayDate } from "../utils/pocketItemDisplayDate";
 import { sharePocketItem } from "../utils/sharePocketItem";
 
@@ -18,7 +19,6 @@ type ItemDetailPageProps = {
   onEdit: (item: PocketItem) => void;
   onDelete: (itemId: string) => Promise<void>;
 };
-
 
 export default function ItemDetailPage({
   itemId,
@@ -139,7 +139,7 @@ export default function ItemDetailPage({
             ‹ 戻る
           </button>
           <img
-            src="/pocket-maker-note/image/head.png"
+            src={headerImageUrl}
             alt="いつも買ってるあのメーカー ポケット帳"
             className="h-12 w-auto max-w-full justify-self-end object-contain"
           />

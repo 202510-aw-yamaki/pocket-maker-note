@@ -14,6 +14,7 @@ import {
 } from "../data/categoryIconTemplates";
 import { listPocketItems, seedPocketItemsIfEmpty } from "../db/pocketItemsDb";
 import type { PocketItem } from "../types/PocketItem";
+import headerImageUrl from "../assets/head.png";
 
 type ItemListPageProps = {
   onSelectItem: (itemId: string) => void;
@@ -200,7 +201,7 @@ export default function ItemListPage({
           <div className="grid min-h-12 grid-cols-[4.75rem_1fr_4.75rem] items-center gap-0">
             <span aria-hidden="true" />
             <img
-              src="/pocket-maker-note/image/head.png"
+              src={headerImageUrl}
               alt="いつも買ってるあのメーカー ポケット帳"
               className="h-12 w-auto max-w-full justify-self-end object-contain"
             />
